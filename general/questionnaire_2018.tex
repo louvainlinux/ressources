@@ -1,0 +1,393 @@
+\documentclass[a4paper,10pt,BCOR10mm,oneside,headsepline]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage{wasysym}% provides \ocircle and \Box
+\usepackage{enumitem}% easy control of topsep and leftmargin for lists
+\usepackage{color}% used for background color
+\usepackage{forloop}% used for \Qrating and \Qlines
+\usepackage{ifthen}% used for \Qitem and \QItem
+\usepackage{typearea}
+\usepackage{amssymb}
+\areaset{17cm}{26cm}
+\setlength{\topmargin}{-1cm}
+\usepackage{scrpage2}
+\usepackage[french]{babel}
+\pagestyle{scrheadings}
+\ihead{Le grand questionnaire du Louvain-li-nux}
+\ohead{\pagemark}
+\chead{}
+\cfoot{}
+
+%% \Qq = Questionaire question. Oh, this is just too simple. It helps
+%% making it easy to globally change the appearance of questions.
+\newcommand{\Qq}[1]{\textbf{#1}}
+
+%% \QO = Circle or box to be ticked. Used both by direct call and by
+%% \Qrating and \Qlist.
+\newcommand{\QO}{$\Box$}% or: $\ocircle$
+
+%% \Qrating = Automatically create a rating scale with NUM steps, like
+%% this: 0--0--0--0--0.
+\newcounter{qr}
+\newcommand{\Qrating}[1]{\QO\forloop{qr}{1}{\value{qr} < #1}{---\QO}}
+
+%% \Qline = Again, this is very simple. It helps setting the line
+%% thickness globally. Used both by direct call and by \Qlines.
+\newcommand{\Qline}[1]{\noindent\rule{#1}{0.6pt}}
+
+%% \Qlines = Insert NUM lines with width=\linewith. You can change the
+%% \vskip value to adjust the spacing.
+\newcounter{ql}
+\newcommand{\Qlines}[1]{\forloop{ql}{0}{\value{ql}<#1}{\vskip0em\Qline{\linewidth}}}
+
+%% \Qlist = This is an environment very similar to itemize but with
+%% \QO in front of each list item. Useful for classical multiple
+%% choice. Change leftmargin and topsep accourding to your taste.
+\newenvironment{Qlist}{%
+\renewcommand{\labelitemi}{\QO}
+\begin{itemize}[leftmargin=1.5em,topsep=-.5em]
+}{%
+\end{itemize}
+}
+
+%% \Qtab = A "tabulator simulation". The first argument is the
+%% distance from the left margin. The second argument is content which
+%% is indented within the current row.
+\newlength{\qt}
+\newcommand{\Qtab}[2]{
+\setlength{\qt}{\linewidth}
+\addtolength{\qt}{-#1}
+\hfill\parbox[t]{\qt}{\raggedright #2}
+}
+
+%% \Qitem = Item with automatic numbering. The first optional argument
+%% can be used to create sub-items like 2a, 2b, 2c, ... The item
+%% number is increased if the first argument is omitted or equals 'a'.
+%% You will have to adjust this if you prefer a different numbering
+%% scheme. Adjust topsep and leftmargin as needed.
+\newcounter{itemnummer}
+\newcommand{\Qitem}[2][]{% #1 optional, #2 notwendig
+\ifthenelse{\equal{#1}{}}{\stepcounter{itemnummer}}{}
+\ifthenelse{\equal{#1}{a}}{\stepcounter{itemnummer}}{}
+\begin{enumerate}[topsep=2pt,leftmargin=2.8em]
+\item[\textbf{\arabic{itemnummer}#1.}] #2
+\end{enumerate}
+}
+
+%% \QItem = Like \Qitem but with alternating background color. This
+%% might be error prone as I hard-coded some lengths (-5.25pt and
+%% -3pt)! I do not yet understand why I need them.
+\definecolor{bgodd}{rgb}{0.8,0.8,0.8}
+\definecolor{bgeven}{rgb}{0.9,0.9,0.9}
+\newcounter{itemoddeven}
+\newlength{\gb}
+\newcommand{\QItem}[2][]{% #1 optional, #2 notwendig
+\setlength{\gb}{\linewidth}
+\addtolength{\gb}{-5.25pt}
+\ifthenelse{\equal{\value{itemoddeven}}{0}}{%
+\noindent\colorbox{bgeven}{\hskip-3pt\begin{minipage}{\gb}\Qitem[#1]{#2}\end{minipage}}%
+\stepcounter{itemoddeven}%
+}{%
+\noindent\colorbox{bgodd}{\hskip-3pt\begin{minipage}{\gb}\Qitem[#1]{#2}\end{minipage}}%
+\setcounter{itemoddeven}{0}%
+}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% End of questionnaire command definitions %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{center}
+\textbf{\huge Le grand questionnaire du Louvain-li-nux}
+\end{center}\vskip1em
+
+\noindent Bienvenue dans le graaaaand questionnaire du Louvain-li-nux. Répondez y avec beaucoup de soin, comme si votre vie en dépendait (plus d'explications là-dessus plus tard).
+
+%\noindent \textit{Please note that no tabular environment is used in
+%this example questionnaire. Of course, you could use tabular to
+%create more complex layout.}
+
+\section*{Pour le tueur à gages}
+
+\Qitem{ \Qq{Ton nom}: \Qline{8.6cm} }
+\Qitem{ \Qq{Ton prénom}: \Qline{8cm} }
+\Qitem{ \Qq{Genre}: \Qline{5cm}}
+\Qitem{ \Qq{Login}: \Qline{5cm}}
+\Qitem{ \Qq{Mot de passe}: \Qline{5cm}}
+\Qitem{ \Qq{Mensurations}: \Qline{5cm}}
+\Qitem{ \Qq{Licence amoureuse}
+\begin{Qlist}
+\item Libre
+\item Open source
+\item Propriétaire
+\item Autre: \Qline{5cm}
+\end{Qlist}
+}
+
+\Qitem{ \Qq{De combien d'année t'es tu rapproché de ta mort ?}\\
+Je me suis rapproché de ma mort depuis le début de ma vie de \Qline{1.5cm} années.}
+\Qitem { \Qq{Ton adresse e-m-a-i-l ?}
+\Qlines{1}
+}
+
+\Qitem{\Qq{Etudes}:\Qline{10cm}}
+
+\Qitem {\Qq{Ton nr de pigeon voyageur ?}
+\Qline{0.4cm}\hspace{0.1cm}
+\Qline{0.4cm}\hspace{0.1cm}
+\Qline{0.4cm}\hspace{0.1cm}
+\Qline{0.4cm}\hspace{0.1cm}
+\Qline{0.4cm}\hspace{0.1cm}
+\Qline{0.4cm}\hspace{0.1cm}
+\Qline{0.4cm}\hspace{0.1cm}
+\Qline{0.4cm}\hspace{0.1cm}
+\Qline{0.4cm}\hspace{0.1cm}
+\Qline{0.4cm}\hspace{0.1cm}
+}
+
+\Qitem{\Qq{Externe et/ou Interne}}
+
+\Qitem{\Qq{Q1 et/ou Q2}}
+
+\Qitem{\Qq{1 ou 2 ans}}
+
+\Qitem{\Qq{Disponible les lundis soirs (pour la permanence) ?}\hspace{1cm}\QO{} \hspace{0.2cm}Oui\hspace{1cm}\QO{}\hspace{0.2cm}Non}
+
+\Qitem{ \Qq{Es tu de bonne humeur ?}\\ \hskip0.4cm \QO{}
+Oui \hskip0.5cm \QO{}Oui \hskip0.5cm \QO{}Je suis au souper de recrutement du Linux! Bien sûr !}
+
+\section*{Pour notre plaisir}
+
+\Qitem {\Qq{Devine l'âge d'Axel}\\
+Axel est né: \Qline{2cm} Bc.
+}
+
+\Qitem{\Qq{Motivations pour entrer dans un kap ?}
+\Qlines{2}
+}
+
+\Qitem{\Qq{Motivations pour entrer au Louvain-li-Nux ?}
+\Qlines{2}
+}
+
+\Qitem{\Qq{Depuis combien d’années es tu en KAP ?}\hspace{1cm}\Qline{5cm}}
+\Qitem{\Qq{Combien d’années en kot (hors KAP) ?}\hspace{1cm}\Qline{5cm}}
+
+\Qitem{ \Qq{Aimez vous l'humour de répétition ?}\\
+\noindent \textit{Entourer les cases correspondantes}
+\begin{Qlist}
+\item Je suis une licorne.
+\item Non
+\item Oui, les soirs de pleine lune si on est le quatrième jour du deuxième quadrant suivant la précédente pleine lune si on est un année bissextile et que tu sens des rougoudous dans mon ventre.
+\end{Qlist}
+}
+
+\Qitem {\Qq{Combien de temps, en heure, penses-tu que l’investissement en kap nécessite par semaine?}\Qline{5cm}
+}
+
+\Qitem { \Qq{Quel type de Linuxien êtes vous ?}\\
+\noindent \textit{Entourer les consonnes de la/les réponses(s)}
+\begin{Qlist}
+\item J'ai déjà fait foirer une installation.
+\item Je vais bientôt faire foirer une installation.
+\item Windows4Ever
+\end{Qlist}
+}
+
+\Qitem {\Qq{Pire qualité en tant que cokoteur ?}
+\Qlines{1}
+}
+\Qitem{\Qq{Meilleur défaut ?}
+\Qlines{1}
+}
+
+\Qitem { \Qq{On te donne une enquête de satisfaction avec une liste et des cotes d'appréciation, qu'entoures-tu? Les puces ou les smileys?}
+\begin{Qlist}
+\item les puces
+\item les smileys
+\item les puces et les smileys
+\item les deux
+\item aucuns des deux ( personnes lit les enquête de satisfaction de toute façon )
+\end{Qlist}
+Justifie
+\Qlines{1}
+Encore, c'était pas clair avant
+\Qlines{1}
+Pourquoiii ?
+\Qlines{1}
+}
+
+\Qitem{\Qq{Qu'est ce que l'humour de répétition}
+\Qlines{5}
+}
+
+\Qitem {\Qq{Distribution ?}
+\noindent \textit{Cette question est éliminatoire}
+\begin{Qlist}
+\item Arch
+\item Debian
+\item QubeOs
+\item Ubuntu
+\item OpenBsd
+\item Autre: \Qline{10cm}
+\end{Qlist}
+Depuis combien de temps ? \Qline{5cm}
+}
+
+\renewcommand{\QO}{$\ocircle$}
+\Qitem {\Qq{Aime tu l'humour de répétition ?}\\
+\noindent \textit{Colorie un nombre pair de boules $> 17$ et $< 23$ si oui et que tu est  un joyeux luron\\
+Colorie un nombre impair de boules $< 25$ boules si oui\\
+Colorie un nombre premier de boules $<= 17$ si non\\
+Colorie un nombre sublime de boules si peut être}
+
+% en gros (je sais que c'est pas clair, c'est fait exprès):
+% 12 boules 	= peut être
+% ]17;23[ 		= oui et c'est un joyeux luron
+% [23;25[		= oui
+% [0;17] sauf 12 = non
+
+
+\begin{center}
+\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\\
+\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\\
+\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\\
+\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\QO{}\hspace{0.3cm}\\
+\end{center}
+}
+\renewcommand{\QO}{$\Box$}
+\Qitem { \Qq{Es-tu capable de supporter des voisins un peu bizarre aimant les maths ?}
+\begin{Qlist}
+\item $\mathbb{O}^{(ui)}$
+\item Non
+\end{Qlist}
+}
+
+\Qitem{\Qq{Que signifient les étoiles sur la calotte de notre logo?}
+\Qlines{2}
+}
+
+\Qitem{\Qq{Bière ou Alcool ?}
+\Qline{10cm}
+}
+\Qitem{\Qq{Boisson alcoolisée préférée ?}
+\Qline{10cm}
+}
+\Qitem{\Qq{Café ou Thé ?}
+\Qline{10cm}}
+
+\Qitem{ \Qq{TDK rime avec ? (Sans discriminer ceux qui ne viennent pas de KAP)}
+\Qlines{1}
+}
+
+\Qitem {\Qq{Combien de temps met tu pour voler une porte de toilette ?}\Qline{2cm} ms}
+
+\Qitem{\Qq{Régime alimentaire :}
+\Qlines{1}
+}
+
+\Qitem{\Qq{Aimes tu l'humour de répétition ?}
+\Qlines{1}
+}
+
+\Qitem {
+\begin{Qlist}
+\item KAJ
+\item Meca
+\end{Qlist}
+}
+
+
+\Qitem{\Qq{Maîtrises-tu le logiciel tristement célèbre dans notre kot : Thunderbird}
+\begin{Qlist}
+\item Oui --- Je suis masochiste
+\item Non
+\end{Qlist}
+}
+
+\Qitem {\Qq{Compte tu amener un lit double ?}
+\Qlines{1}
+}
+
+
+\Qitem{\Qq{Est-ce que tu fais la vaisselle des autres ? (attention : question importante!!)}\Qlines{1}}
+
+ \Qitem{\Qq{Maîtrises-tu la navigation privée ?}\\
+ \noindent \textit{Colorie les puces correspondant à ta réponse (no bics sont NSA-proof)}
+ %oui je sais qu'il n'y a rien à colorier, c'est fait exprès
+ \begin{itemize}
+ \item Ça enregistre ?
+ \item J'assume mes fétiches.
+ \end{itemize}
+}
+ 
+ \Qitem{\Qq{Pour toi Google peut-il devenir un système d'exploitation ?}
+ \begin{center}
+ Non\hspace{2cm}\Qrating{15}\hspace{2cm}{Oui}
+ \end{center}
+ }
+ 
+ \Qitem{\Qq{Plutôt rameneur ou ramené(e) ou ramoneur ou ramoné(e)  ?}
+ \Qlines{1}
+ }
+
+\renewcommand{\QO}{$\times$}
+\Qitem{\Qq{Aimes tu l'humour de répétition}\\
+\noindent \textit{Entoure la bonne croix}
+\begin{center}
+Non\hspace{2cm}\Qrating{15}\hspace{2cm}Oui
+\end{center}
+}
+
+\Qitem{ \Qq{Plutôt tractopelle ou énergie ?}\\
+\noindent \textit{Va en discuter avec notre trésorier et notre \og{}responsable\fg{} matos)}
+\Qlines{1}
+\begin{flushright}
+Signature du choisi: \Qline{3cm}
+\end{flushright}
+}
+ 
+ \Qitem{\Qq{Es tu plutôt fan de ronds points ou de vide ventilé ?}
+ \Qlines{1}
+ }
+ 
+\renewcommand{\QO}{$\Box$}
+ 
+\Qitem{\Qq{Que préfère tu ?}
+\begin{Qlist}
+	\item Kernel panic
+	\item Segfault
+	\item Out of memory
+\end{Qlist}
+}
+
+\Qitem {\Qq{Est-ce qu’en soirée tu t’EXPLOOOOOOOOSE ?  Whhoop whoop}
+\Qlines{2}
+}
+
+\Qitem {\Qq{Est ce que tu est un peu N\oe ud-N\oe ud ?}\\
+\noindent \textit{Aragna rheugneu pouf gniiii}
+\Qlines{2}
+}
+
+ \Qitem{\Qq{Un dernier mot ?}
+ \Qlines{5}
+ }
+
+%% Plz laisser ces commentaires ici
+
+%\section*{About this questionnaire}
+%\Qitem{Question\Qq{yolo}\Qtab{5cm}{ouiii}}
+%\minisec{Please evaluate the following composers}
+%\vskip.5em
+
+%\renewcommand{\QO}{$\ocircle$}% Use circles now instead of boxes.
+%\Qline{5cm}
+%\Qlines{2}
+%\Qrating{7}\\
+%\Qtab{5.5cm}{\QO{} Yes} \hskip0.5cm \QO{} No
+
+
+
+\end{document}
